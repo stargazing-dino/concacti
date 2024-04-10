@@ -1,0 +1,4 @@
+- [ ] Make it so it `cargo fmt` and `cargo fix --allow-dirty --broken-code`
+- [ ] Add the readme?
+- [ ] Make it so I can just point it to a github url?
+- [ ] Make it so it prints the tree at the start
