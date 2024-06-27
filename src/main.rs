@@ -14,13 +14,13 @@ mod tree;
     long_about = None,
     after_help = "EXAMPLES:
     # Concatenate all .ts files, excluding those in node_modules
-    file_concatenator -d ./src -o output.txt -p '**/*.ts' -p '!**/node_modules/**'
+    concacti -d ./src -o output.txt -p '**/*.ts' -p '!**/node_modules/**'
 
     # Concatenate all files, limit depth to 2, and write tree
-    file_concatenator -d ./project -o output.txt --max-depth 2 --write-tree
+    concacti -d ./project -o output.txt --max-depth 2 --write-tree
 
     # Use custom comment style and buffer size
-    file_concatenator -d ./docs -o output.md -p '**/*.md' --comment-style '<!--' --buffer-size 16384
+    concacti -d ./docs -o output.md -p '**/*.md' --comment-style '<!--' --buffer-size 16384
 "
 )]
 struct Cli {
