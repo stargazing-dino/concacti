@@ -33,31 +33,39 @@ jobs:
           command: test
           args: --verbose
 
-  cross_compile:
-    name: Cross Compile
+  build_and_release:
+    name: Build and Release
     needs: build_and_test
     if: github.event_name == 'release' && github.event.action == 'created'
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [x86_64-apple-darwin, x86_64-unknown-linux-gnu]
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest-large
+            target: x86_64-apple-darwin
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - name: Install latest stable
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: ${{ matrix.target }}
           override: true
-      - name: Add target
-        run: rustup target add ${{ matrix.target }}
-      - name: Install cross
-        run: cargo install cross
-      - name: Cross compile
-        run: cross build --release --target ${{ matrix.target }}
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target ${{ matrix.target }}
       - name: Rename binary
         run: |
           mv target/${{ matrix.target }}/release/file_concatenator \
              file_concatenator-${{ github.ref_name }}-${{ matrix.target }}
+      - name: Generate checksum
+        run: |
+          sha256sum file_concatenator-${{ github.ref_name }}-${{ matrix.target }} > \
+            file_concatenator-${{ github.ref_name }}-${{ matrix.target }}.sha256
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
@@ -67,3 +75,12 @@ jobs:
           asset_path: ./file_concatenator-${{ github.ref_name }}-${{ matrix.target }}
           asset_name: file_concatenator-${{ github.ref_name }}-${{ matrix.target }}
           asset_content_type: application/octet-stream
+      - name: Upload Checksum
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./file_concatenator-${{ github.ref_name }}-${{ matrix.target }}.sha256
+          asset_name: file_concatenator-${{ github.ref_name }}-${{ matrix.target }}.sha256
+          asset_content_type: text/plain
