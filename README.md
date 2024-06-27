@@ -14,6 +14,15 @@ Concacti is a command-line tool for concatenating files in a directory based on 
 
 ## Installation
 
+There are pre-built binaries in the release directory.
+
+If you are on macOS, you can install Concacti using Homebrew:
+
+```
+brew tap stargazing-dino/concacti
+brew install concacti
+```
+
 To install Concacti, you need to have Rust and Cargo installed on your system. Then, you can build and install the project using:
 
 ```
