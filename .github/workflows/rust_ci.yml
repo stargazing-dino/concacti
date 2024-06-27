@@ -64,8 +64,14 @@ jobs:
              concacti-${{ github.ref_name }}-${{ matrix.target }}
       - name: Generate checksum
         run: |
-          sha256sum concacti-${{ github.ref_name }}-${{ matrix.target }} > \
-            concacti-${{ github.ref_name }}-${{ matrix.target }}.sha256
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            sha256sum concacti-${{ github.ref_name }}-${{ matrix.target }} > concacti-${{ github.ref_name }}-${{ matrix.target }}.sha256
+          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+            shasum -a 256 concacti-${{ github.ref_name }}-${{ matrix.target }} > concacti-${{ github.ref_name }}-${{ matrix.target }}.sha256
+          else
+            echo "Unsupported operating system"
+            exit 1
+          fi
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
